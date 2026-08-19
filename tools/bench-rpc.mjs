@@ -4,8 +4,14 @@
 // Marketing pages will not tell you whether an endpoint keeps May transactions
 // or dies at a batch of 20. This does.
 //
-//   node tools/bench-rpc.mjs
-//   node tools/bench-rpc.mjs "https://your-endpoint-with-key"
+//   node tools/bench-rpc.mjs            tests SOLANA_RPC from .env, or the
+//                                       public endpoints if none is set
+//   node tools/bench-rpc.mjs --public   always tests the public endpoints
+//
+// Prefer putting your endpoint in .env over passing it as an argument: the URL
+// contains your API token in its path, and arguments end up in shell history.
+// Printed output masks it either way.
+import '../app/lib/env.js';
 import { readFileSync, existsSync } from 'node:fs';
 
 const SIGS_FILE = 'v0/data/signatures.json';
@@ -19,7 +25,7 @@ all.sort((a, b) => a.blockTime - b.blockTime);
 const oldest = all[0];
 const sample = all.slice(0, 20).map(s => s.signature);   // oldest 20: the hardest case
 
-const ENDPOINTS = process.argv[2] ? [process.argv[2]] : [
+const PUBLIC = [
   'https://api.mainnet-beta.solana.com',
   'https://solana-rpc.publicnode.com',
   'https://solana.drpc.org',
@@ -29,6 +35,24 @@ const ENDPOINTS = process.argv[2] ? [process.argv[2]] : [
   'https://endpoints.omniatech.io/v1/sol/mainnet/public',
   'https://solana.leorpc.com/?api_key=FREE',
 ];
+
+const arg = process.argv[2];
+const ENDPOINTS =
+  arg && arg !== '--public' ? [arg]
+  : arg === '--public' ? PUBLIC
+  : process.env.SOLANA_RPC ? [process.env.SOLANA_RPC]
+  : PUBLIC;
+
+// The token lives in the URL path or query, so never print a URL whole.
+function mask(url) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.replace(/\/[^/]{8,}/g, '/***');
+    return u.host + (path === '/' ? '' : path) + (u.search ? '?***' : '');
+  } catch {
+    return 'invalid url';
+  }
+}
 
 const TX_OPTS = { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -73,7 +97,7 @@ console.log(`sample: ${sample.length} signatures, oldest ${new Date(oldest.block
 const results = [];
 
 for (const url of ENDPOINTS) {
-  const label = url.replace(/^https:\/\//, '').split('/')[0];
+  const label = mask(url);
   const row = { label, url };
 
   // 1. reachable + archival: can it still see the oldest transaction?
@@ -122,6 +146,8 @@ if (!usable.length) {
   usable.sort((a, b) => (b.sustained.ok - a.sustained.ok) || (a.batch.ms - b.batch.ms));
   for (const r of usable) {
     const perTx = r.sustained.ok ? Math.round(r.sustained.ms / r.sustained.ok) : 0;
-    console.log(`${r.label.padEnd(38)} ${r.sustained.ok}/${r.sustained.of} sustained, ~${perTx}ms/tx  ${r.url}`);
+    const scanMs = perTx * 400;
+    console.log(`${r.label.padEnd(38)} ${r.sustained.ok}/${r.sustained.of} sustained, ~${perTx}ms/tx  -> a 400-tx cold scan takes ~${(scanMs / 1000).toFixed(0)}s`);
   }
+  console.log('\nput the winner in .env as SOLANA_RPC and set RPC_BATCH=100');
 }
