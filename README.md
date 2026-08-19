@@ -4,46 +4,62 @@ Behavioural analytics for memecoin traders. Not a signal service, not a
 prediction engine. The question is "when I lose money, what pattern of my own
 actually caused it?"
 
-Full concept: [`docs/brief.md`](docs/brief.md)
+## Run the scanner
 
-## Where the project actually stands
+```bash
+node app/server.js
+```
 
-**V0 is done: the concept is validated on one wallet, and it found something the
-brief did not predict.** Read [`FINDINGS.md`](FINDINGS.md) first, it is the most
-important file here.
+Open http://localhost:3000, paste a Solana address, get a verdict. No install
+step, no dependencies, no wallet connection, nothing signed.
+
+**Set a real RPC first.** The public Solana endpoint rate-limits hard enough that
+a cold scan stalls partway through. See [`app/README.md`](app/README.md).
+
+## Where the project stands
+
+V0 validated the concept on one wallet and found something the brief did not
+predict. Read [`FINDINGS.md`](FINDINGS.md) before anything else.
 
 Short version: the tested wallet's leak is holding winners too long, not selling
-them too early. Positions peak at a median 3.5 hours and get held a median 25.4
-hours. Median peak paper gain +46.3% turns into a median realised −43.7%.
+them too early. Positions peak before hour six and get held past hour sixty. The
+median winner peaked +85% and closed −39%. That is $748 handed back on an account
+that only lost $328.
 
 The rotation hypothesis the brief is built around did not survive the data.
 
-## What exists
+## What is here
 
 | | |
 |---|---|
-| [`v0/`](v0/) | Working analysis pipeline. Wallet address in, behavioural report out. |
+| [`app/`](app/) | The scanner. Address in, behavioural verdict out. |
 | [`FINDINGS.md`](FINDINGS.md) | Results from the first wallet, with limits stated. |
+| [`v0/`](v0/) | Research pipeline the findings came from. Scripts, not product. |
 | [`docs/brief.md`](docs/brief.md) | Original product concept. |
 
-No app yet, on purpose. No frontend, database, auth or wallet connect until the
-core insight is proven on more than one wallet.
+There is no database, no auth and no wallet connect, on purpose. None of them are
+needed to deliver the insight, and every one of them is a reason for someone to
+bounce before they see their number.
 
-## Getting started
+## What the scanner will not do
 
-```bash
-git clone https://github.com/ghayzal/ayo-build.git
-cd ayo-build
-```
-
-Then follow [`v0/README.md`](v0/README.md) to run the pipeline against any Solana
-address. Node 24+, no API keys, no install step.
+It is allowed to say nothing conclusive. A wallet with fewer than five closed
+positions, or one that genuinely keeps its winners, gets told that instead of
+having a leak invented for it. A tool that finds a problem in every wallet is not
+measuring anything.
 
 ## Next
 
-The single most useful contribution right now is **running `v0/` against another
-wallet**, ideally one trading real size. If time-to-peak versus hold-time holds
-up across traders, that is the product. If it does not, we learned that cheaply.
+The most useful contribution right now is **running the scanner against another
+wallet**, ideally one trading real size. One wallet is a hypothesis. If
+time-to-peak versus hold-time holds across traders, that is the product.
+
+After that, in order:
+
+1. A real RPC endpoint, which unblocks everything else.
+2. A Telegram bot that pings at the hour a position historically peaks. The
+   scanner gets people in; the alarm is the part that changes behaviour.
+3. Only then, anything from the brief's later sections.
 
 ## Working together
 

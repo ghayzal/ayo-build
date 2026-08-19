@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giveback — what your winners cost you</title>
+<meta name="description" content="Paste a Solana address. Find out how much of your peak paper gains you handed back.">
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📉</text></svg>">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Giveback</h1>
+    <p class="tag">Your coin selection probably isn't the problem. Paste a Solana address and find out what is.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <form id="form" class="scanbox" autocomplete="off">
+    <label class="sr" for="address">Solana wallet address</label>
+    <input id="address" name="address" type="text" spellcheck="false"
+           placeholder="Solana wallet address" required>
+    <button id="go" type="submit">Scan</button>
+  </form>
+  <p id="error" class="error" hidden></p>
+
+  <section id="progress" class="progress" hidden>
+    <ul id="steps"></ul>
+  </section>
+
+  <section id="result" hidden>
+
+    <div class="hero" id="hero">
+      <div class="hero-addr"><span id="heroAddr"></span></div>
+      <div class="hero-num" id="heroNum"></div>
+      <div class="hero-sub" id="heroSub"></div>
+      <div class="hero-conf" id="heroConf"></div>
+    </div>
+
+    <section class="panel" id="timingPanel">
+      <h2>Where it goes wrong</h2>
+      <p class="lede" id="timingLede"></p>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <section class="panel" id="worstPanel">
+      <h2>The ones that hurt most</h2>
+      <div class="tablewrap">
+        <table id="worst">
+          <thead>
+            <tr>
+              <th>Token</th><th class="n">Size</th><th class="n">Peaked</th>
+              <th class="n">Peak at</th><th class="n">You held</th><th class="n">Result</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="entryPanel" hidden>
+      <h2>Entries</h2>
+      <p class="lede" id="entryLede"></p>
+      <div class="cards" id="entryCards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>The account</h2>
+      <div class="cards" id="statCards"></div>
+    </section>
+
+    <section class="panel limits">
+      <h2>What this can't tell you</h2>
+      <ul id="limits"></ul>
+    </section>
+
+    <p class="again"><button id="reset" type="button">Scan another wallet</button></p>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>Reads public on-chain data only. No wallet connection, nothing signed, nothing stored.</p>
+  <p><a href="https://github.com/ghayzal/ayo-build">Source and method</a></p>
+</footer>
+
+<script src="/app.js" type="module"></script>
+</body>
+</html>

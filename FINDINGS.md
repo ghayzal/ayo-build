@@ -37,18 +37,24 @@ free keyless sources.
 
 ## The leak: winners are held until they become losers
 
-Of 35 positions, 19 went meaningfully green at some point.
+Of 35 positions, 13 peaked more than 25% up at some point. That 25% line is the
+threshold the app ships with: a position that peaked +2% is not a winner anyone
+gave back.
 
-| | |
+| Across those 13 | |
 |---|---|
-| Median peak paper gain | **+46.3%** |
-| Median realised result | **−43.7%** |
-| Median time to peak | **3.5h** |
-| Median total hold | **25.4h** |
-| Peaked >25% up and still closed red | **9 of 13** |
+| Median peak paper gain | **+84.9%** |
+| Median realised result | **−39.3%** |
+| Median time to peak | **5.6h** |
+| Median total hold | **62.5h** |
+| Still closed red | **9 of 13** |
 
-The position tops out around hour three and gets held for another twenty-two
-while it bleeds out.
+The position tops out before hour six and gets held for another fifty-seven
+while it bleeds out, eleven times longer than it took to reach its high.
+
+Loosening the threshold to any position that ever went green at all (19 of 35)
+gives +46.3% median peak, −43.7% median realised, 3.5h to peak and 25.4h held.
+The direction is identical either way; only the magnitude moves.
 
 The largest position in the account is the cleanest example. PAYNE, $200 in, was
 up 94% eleven hours after entry. It was held for 134 hours total and sold 69%
@@ -84,8 +90,9 @@ that it measures something real.
 ## Secondary findings
 
 **Entries are badly timed.** Ranking each entry hour against every other hour of
-that token's life, entries land at the **22nd percentile** — they buy before
-worse-than-typical moves. Only 10 of 26 beat the token's own median hour.
+that token's life, entries land at the **18th to 22nd percentile** depending on
+whether still-open positions are included. They buy before worse-than-typical
+moves. Only 10 of 26 beat the token's own median hour.
 
 **Chasing a run-up is the specific mechanism.** Split by how far the token had
 already moved in the 24h before entry:
@@ -128,10 +135,10 @@ technical risk going in. GeckoTerminal returned usable hourly OHLCV for all 33
 tokens, including dead Pump.fun launches.
 
 The insight that would actually change behaviour is not the one in the brief.
-It is a single sentence: *your positions peak around hour three and you hold them
-past hour twenty-five.* That is measurable from wallet history alone, needs no
-thesis capture, no wallet connection and no journaling, and it lands in the first
-session.
+It is a single sentence: *your positions peak before hour six and you hold them
+past hour sixty.* That is measurable from wallet history alone, needs no thesis
+capture, no wallet connection and no journaling, and it lands in the first
+session. It is now the headline of the scanner in [`app/`](app/).
 
 If that generalises across wallets, the MVP is much smaller than the brief
 scopes. Conviction Lock, thesis entry and the social layer are all downstream of

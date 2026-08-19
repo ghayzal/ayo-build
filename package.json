@@ -1,0 +1,15 @@
+{
+  "name": "ayo-build",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Behavioural analytics for memecoin traders",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node app/server.js",
+    "seed": "node v0/seed-app-cache.mjs"
+  }
+}
