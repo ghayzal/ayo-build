@@ -1,6 +1,8 @@
 // Dependency-free Node server. No npm install, no build step: `node app/server.js`.
 // A scan streams progress over SSE because the price fetch is slow enough that a
 // silent 60-second wait would read as a broken page.
+import './lib/env.js';   // must stay first: loads .env before anything reads it
+
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, dirname, normalize, extname } from 'node:path';
@@ -16,9 +18,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const PUBLIC = join(HERE, 'public');
 const PORT = process.env.PORT || 3000;
 
-const MAX_SIGNATURES = 400;   // deepest history we will read in one scan
-const MAX_TOKENS = 30;        // priced in order of capital committed
-const MAX_CONCURRENT_SCANS = 2;
+const MAX_SIGNATURES = Number(process.env.MAX_SIGNATURES || 400);  // deepest history per scan
+const MAX_TOKENS = Number(process.env.MAX_TOKENS || 30);           // priced by capital committed
+const MAX_CONCURRENT_SCANS = Number(process.env.MAX_CONCURRENT_SCANS || 2);
 
 let activeScans = 0;
 

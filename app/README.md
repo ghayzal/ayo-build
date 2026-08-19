@@ -14,23 +14,55 @@ plain Node 20+ and three static files.
 
 ## Set a real RPC before you show anyone
 
-The public Solana RPC will not carry this. It rate-limits `getTransaction`
-hard enough that a cold scan of a 107-transaction wallet stalls partway through
-and never finishes. Batches above about five calls come back entirely 429.
+The public Solana RPC will not carry this. A cold scan of a 107-transaction
+wallet stalls partway through and never finishes.
 
 ```bash
-SOLANA_RPC="https://your-endpoint" RPC_BATCH=100 node app/server.js
+cp .env.example .env    # then put your endpoint in SOLANA_RPC
+node app/server.js
 ```
 
-With a paid or free-tier indexer and a batch size of 100, a cold scan drops from
-minutes to seconds. This is the single highest-value change to make here, and
-the code already handles it: `RPC_BATCH` is the only knob.
+Every setting is in [`.env.example`](../.env.example).
 
-| Variable | Default | Notes |
-|---|---|---|
-| `SOLANA_RPC` | public endpoint | Point at a real indexer. |
-| `RPC_BATCH` | `5` | Raise to 100 on a paid endpoint. |
-| `PORT` | `3000` | |
+### Which endpoint
+
+We benchmarked the no-signup public endpoints against the workload that actually
+matters, batched `getTransaction` over months-old signatures. Reproduce it with:
+
+```bash
+node tools/bench-rpc.mjs
+```
+
+Every one of them failed. Most cannot see old transactions at all, because they
+prune history and this app needs months of it. **Archival access is the hard
+requirement**, and it is what rules out the free public endpoints.
+
+So one of you has to make a free account. Both of these work:
+
+| | Free tier | Rate | Scans/month* |
+|---|---|---|---|
+| **QuickNode** | 10M credits, archival, no card | 15 rps | ~830 |
+| Helius | 1M credits, archival | 10 rps | ~250 |
+
+\* At the 400-signature cap. A 100-transaction wallet costs a quarter of that, so
+in practice both go a lot further.
+
+QuickNode is the pick: more headroom, faster, no card. Helius is the better
+platform if this ever gets serious, mostly because of `getTransactionsForAddress`,
+which returns 100 full transactions in a single call and would collapse a scan
+from ~400 requests to 4. It is Developer-plan-only at $49/month, so it is not a
+free-tier option, but it is the thing to buy first if scanning volume becomes the
+bottleneck.
+
+Verify whatever you sign up for before wiring it in:
+
+```bash
+node tools/bench-rpc.mjs "https://your-endpoint-with-key"
+```
+
+It checks archival reach, batch tolerance and sustained throughput, and prints a
+verdict. Do not skip it: two of the endpoints we tested answered normal requests
+fine and still could not return a three-month-old transaction.
 
 ## How a scan works
 
