@@ -37,22 +37,34 @@ Every one of them failed. Most cannot see old transactions at all, because they
 prune history and this app needs months of it. **Archival access is the hard
 requirement**, and it is what rules out the free public endpoints.
 
-So one of you has to make a free account. Both of these work:
+So one of you has to make a free account.
 
-| | Free tier | Rate | Scans/month* |
+| | Free allowance | Rate | Permanent? |
 |---|---|---|---|
-| **QuickNode** | 10M credits, archival, no card | 15 rps | ~830 |
-| Helius | 1M credits, archival | 10 rps | ~250 |
+| **Helius** | 1M credits/month | 10 rps | yes |
+| Alchemy | 30M CU/month (~1.1M calls) | 25 rps | yes |
+| QuickNode | 10M credits | 15 rps | **no, 30-day trial** |
 
-\* At the 400-signature cap. A 100-transaction wallet costs a quarter of that, so
-in practice both go a lot further.
+QuickNode's "free" plan is a one-month trial, not an ongoing tier. Do not build
+the habit on it.
 
-QuickNode is the pick: more headroom, faster, no card. Helius is the better
-platform if this ever gets serious, mostly because of `getTransactionsForAddress`,
-which returns 100 full transactions in a single call and would collapse a scan
-from ~400 requests to 4. It is Developer-plan-only at $49/month, so it is not a
-free-tier option, but it is the thing to buy first if scanning volume becomes the
-bottleneck.
+**Helius is the pick.** Archival calls bill at 1 credit with no deep-history
+surcharge, which is the number that matters here since every transaction we read
+is months old. 1M credits is roughly 2,500 scans at the 400-signature cap, or
+about 9,000 scans of a normal hundred-transaction wallet. Its 10 rps is the weak
+point: a 400-transaction cold scan takes around 40 seconds.
+
+Alchemy is the alternative and is faster at 25 rps, but its archival guarantee for
+Solana is stated less precisely, so verify it with the benchmark before trusting
+it.
+
+Syndica advertises 10M requests a month at 100 rps on a free tier, which would
+beat both by a wide margin. We could not load their pricing page to confirm it,
+and have not benchmarked them. Worth ten minutes if someone wants to check.
+
+If scanning volume ever becomes the real bottleneck, the thing to buy is Helius
+Developer at $49/month, for `getTransactionsForAddress`: it returns 100 full
+transactions per call and would collapse a scan from ~400 requests to 4.
 
 Verify whatever you sign up for before wiring it in:
 
