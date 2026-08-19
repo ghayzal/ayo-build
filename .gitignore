@@ -46,3 +46,6 @@ desktop.ini
 .vercel
 .cache/
 coverage/
+
+# Derived wallet data (large, regenerable, and wallet-specific)
+v0/data/
